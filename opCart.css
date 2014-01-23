@@ -1,0 +1,12 @@
+body {
+	line-height: 2em;
+}
+
+.add-to-cart {
+	display: inline;
+	border: 1px solid black;
+	border-radius: 4px;
+	background-color: #ddd;
+	padding: 4px;
+	cursor: pointer;
+}

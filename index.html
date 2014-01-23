@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Test cart</title>
+<script type="text/javascript"
+	src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v1.3.0.js"></script>
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script id="cart-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a shopping cart</p>
+  {{#each items}}
+    <div class="cart-item">{{@index}}: {{this}}</div>
+  {{/each}}
+</script>
+<script type="text/javascript" src="opCart.js"></script>
+<link href="opCart.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+	<p>This is a test shopping cart...</p>
+	<div id="cart-placeholder"></div>
+	<p>Here are some objects we can add to the cart...
+	<div>
+		iphone5 16GB
+		<div class="add-to-cart" item="iPhone5.16G">Buy Now</div>
+	</div>
+	<div>
+		iphone5 32GB
+		<div class="add-to-cart" item="iPhone5.32G">Buy Now</div>
+	</div>
+</body>
+</html>
