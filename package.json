@@ -1,0 +1,21 @@
+{
+  "name": "jsCart",
+  "version": "0.0.0",
+  "description": "Robin POC",
+  "main": "opCartServer.js",
+  "dependencies": {
+    "generic-session": "~0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node opCartServer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/raintonr/jsCart.git"
+  },
+  "author": "Robin Rainton",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "c172ca8d1a6b599442478d57377893f0595d2a40"
+}
