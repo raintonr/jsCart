@@ -68,37 +68,61 @@ function serveFile(req, res) {
 
 			readStream.on("end", function(){
 				console.log("Done reading: %s (%d bytes)", filePath, size);
-//				handleQos(res, body);
-				finishReq(res, body);
+				/* TODO: Only pass certain types through QoS */
+				handleQos(res, body);
 			});
 		}
 	});
 }
 
+var qos = 250;
 var cheerio = require("cheerio");
 var Handlebars = require("handlebars");
 var request = require("request");
+var async = require("async");
 function handleQos(res, body) {
+	var funcs = [];
+	
 	$ = cheerio.load(body);
 	$(".qosTemplate").each(function(){
-		$target = $(this);
-		
-		var req = request("http://localhost:3031" + $target.attr("model"));
+		funcs.push($(this));
+	});
+	
+	async.each(funcs, function(item, callback){
+		replaceQos(item, $, callback);
+	}, function(){
+		body = $.html();
+		finishReq(res, body);
+	});
+}
+
+function replaceQos($target, $, callback) {
+	var req = http.get("http://localhost:3031" + $target.attr("model"));
+	req.on('error', function(err) {
+		console.log('Error: ' + err.message);
+		callback();
+	});
+	req.on('response', function(res) {
+		console.log('Response');
 		var data = "";
-		req.on("data", function (chunk) {
-		    data += chunk;
+		res.on('data', function(chunk){
+			data += chunk;
 		});
-		req.on("end", function() {
+		res.on("end", function() {
 			console.log("Read from server: " + data);
 			var source = $("#" + $target.attr("template")).html();
 			console.log("Compiling template: " + source);
 			template = Handlebars.compile(source);
 			model = JSON.parse(data);
 			$target.html(template(model));
+			$target.attr("qosDone", "1");
+			callback();
 		});
 	});
-	body = $.html();
-	finishReq(res, body);
+	req.setTimeout(qos, function(){
+		console.log("Timeout!");
+		req.abort();
+	});
 }
 
 function finishReq(res, body) {

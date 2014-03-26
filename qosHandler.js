@@ -2,7 +2,8 @@ $(function() {
 	$(".qosTemplate").each(
 		function() {
 			var $target = $(this);
-			$.get("http://localhost:3031" + $target.attr("model"),
+			if (!$target.attr("qosDone")) {
+				$.get("http://localhost:3031" + $target.attr("model"),
 				function(data, textStatus, jqXHR) {
 					console.log("Read from server: " + data);
 	
@@ -17,5 +18,6 @@ $(function() {
 					model = jQuery.parseJSON(data);
 					$target.html(template(model));
 				});
+			}
 		});
 });

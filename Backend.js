@@ -18,6 +18,7 @@ function handle_get(req, res) {
 	res.writeHead(200, {
 		"Access-Control-Allow-Origin": "*"
 	});
+	console.log("Backend serving up: ", req.url);
 	if (req.url == "/slow") {
 		setTimeout(function() {
 			res.end(JSON.stringify({
