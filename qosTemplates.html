@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>QOS template example</title>
+<script type="text/javascript"
+	src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v1.3.0.js"></script>
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="qosHandler.js"></script>
+<script id="fast-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a fast item</p>
+  <p>See... {{operation}}</p>
+</script>
+<script id="slow-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a slow item</p>
+  <p>See... {{operation}}</p>
+</script>
+<script type="text/javascript" src="qosTemplate.js"></script>
+<link href="opCart.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+	<p>This is a test QOS page...</p>
+	<div class="qosTemplate" template="fast-template" model="/fast"></div>
+	<p>Some more static text... blah, blah...</p>
+	<div class="qosTemplate" template="slow-template" model="/slow"></div>
+</body>
+</html>
