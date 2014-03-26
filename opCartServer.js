@@ -1,12 +1,16 @@
 var http = require("http");
-var fs = require("fs");
-var path = require("path");
 var genericSession = require("generic-session");
 var sessionStore = genericSession.MemoryStore();
 
 /* Start the 'backend' server */
 
-require("./Backend").createServer();
+var backendPort = 3031; 
+require("./Backend").createServer(backendPort);
+
+/* Start the 'CMS' server */
+
+var cmsPort = 3032; 
+require("./CMS").createServer(cmsPort);
 
 /* Start our 'frontend' server */
 
@@ -44,34 +48,23 @@ function handle_get(req, res, session) {
 			res.end(data);
 		});
 	} else {
-		/* Nope - just serve up some files */
-		serveFile(req, res);
+		/* Nope - just serve up some files from the CMS*/
+		serveFromCms(req, res);
 	}
 }
 
-function serveFile(req, res) {
-	var filePath = path.join(__dirname, req.url);
-	console.log("File: %s", filePath);	
-
-	fs.exists(filePath, function(exists) {
-		if (!exists) {
-			res.statusCode = 404;
-			res.end("Ooops");
-		} else {
-			var readStream = fs.createReadStream(filePath);
-			var body = "";
-			var size = 0;
-			readStream.on("data", function (chunk) {
-				body += chunk;
-		        size += chunk.length;
-			});
-
-			readStream.on("end", function(){
-				console.log("Done reading: %s (%d bytes)", filePath, size);
-				/* TODO: Only pass certain types through QoS */
-				handleQos(res, body);
-			});
-		}
+function serveFromCms(reqIn, resIn) {
+	var req = http.get("http://localhost:" +cmsPort + reqIn.url);
+	req.on('response', function(res) {
+		console.log('Response from CMS');
+		var body = "";
+		res.on('data', function(chunk){
+			body += chunk;
+		});
+		res.on("end", function() {
+//			handleQos(resIn, body);
+			finishReq(resIn, body);
+		});
 	});
 }
 
@@ -97,13 +90,13 @@ function handleQos(res, body) {
 }
 
 function replaceQos($target, $, callback) {
-	var req = http.get("http://localhost:3031" + $target.attr("model"));
+	var req = http.get("http://localhost:" +backendPort + $target.attr("model"));
 	req.on('error', function(err) {
 		console.log('Error: ' + err.message);
 		callback();
 	});
 	req.on('response', function(res) {
-		console.log('Response');
+		console.log('Response from Backend');
 		var data = "";
 		res.on('data', function(chunk){
 			data += chunk;

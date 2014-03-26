@@ -1,9 +1,8 @@
 var http = require("http");
 
 module.exports = {
-	createServer : function() {
-		var port = 3031;
-		console.log("Starting on %d...", port);
+	createServer : function(port) {
+		console.log("Starting Backend on %d...", port);
 
 		http.createServer(function(req, res) {
 			if (req.method == "GET") {
