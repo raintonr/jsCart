@@ -62,8 +62,7 @@ function serveFromCms(reqIn, resIn) {
 			body += chunk;
 		});
 		res.on("end", function() {
-//			handleQos(resIn, body);
-			finishReq(resIn, body);
+			handleQos(resIn, body);
 		});
 	});
 }
