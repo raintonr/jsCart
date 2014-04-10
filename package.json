@@ -4,7 +4,12 @@
   "description": "Robin POC",
   "main": "opCartServer.js",
   "dependencies": {
-    "generic-session": "~0.1.0"
+    "async": "*",
+    "cheerio": "*",
+    "generic-session": "*",
+    "handlebars": "*",
+    "http": "*",
+    "request": "*"
   },
   "devDependencies": {},
   "scripts": {
