@@ -3,6 +3,8 @@ jsCart
 
 Just a fiddle about with node to make a basic shopping cart.
 
+Later exented to include QoS templates. That is, templates processed server side, but exported to client for later processing if the model a template requires is not available within the given timeframe.
+
 
 How to run it
 =============
