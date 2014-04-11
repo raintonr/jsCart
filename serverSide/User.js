@@ -9,12 +9,16 @@ function User(req) {
 
 	/*
 	 * TODO: dig out user info from header. For now just allow the slow
-	 * operation.
+	 * operation for anonymous, fast for any user (look at 'cn' header).
 	 * 
 	 * If there were any complex operations going on here, we would stash the
 	 * results in the session.
 	 */
 	this.userAcl.allow("read", "/slow");
+
+	if (req.headers["cn"]) {
+		this.userAcl.allow("read", "/fast");
+	}
 }
 
 User.prototype.allowed = function(path) {

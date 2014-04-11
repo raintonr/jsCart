@@ -44,7 +44,7 @@ function handle_get(req, res, session) {
 			res.end(data);
 		});
 	} else {
-		/* Nope - just serve up some files from the CMS*/
+		/* Nope - just serve up some files from the CMS */
 		serveFromCms(req, res);
 	}
 }
@@ -58,7 +58,7 @@ function serveFromCms(reqIn, resIn) {
 			body += chunk;
 		});
 		res.on("end", function() {
-			qosHandler.handleQos(resIn, body);
+			qosHandler.handleQos(reqIn, resIn, body);
 		});
 	});
 }
