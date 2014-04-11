@@ -8,7 +8,7 @@ module.exports = {
 		createServer : function(optsIn) {
 			opts = optsIn;
 			
-			qosHandler.init(opts.backendPort);
+			qosHandler.init(opts);
 			console.log("Starting on %d...", opts.frontendPort);
 
 			http.createServer(function(req, res) {

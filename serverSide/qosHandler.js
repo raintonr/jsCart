@@ -7,8 +7,8 @@ var async = require("async");
 var backendPort;
 
 module.exports = {
-	init : function(backendPortIn) {
-		backendPort = backendPortIn;
+	init : function(opts) {
+		backendPort = opts.backendPort;
 	},
 	handleQos : function(res, body) {
 		var funcs = [];
