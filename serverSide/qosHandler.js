@@ -41,13 +41,24 @@ function replaceQos($target, $, callback) {
 			data += chunk;
 		});
 		res.on("end", function() {
-			console.log("Read from server: " + data);
-			var source = $("#" + $target.attr("template")).html();
-			console.log("Compiling template: " + source);
-			template = Handlebars.compile(source);
-			model = JSON.parse(data);
-			$target.html(template(model));
-			$target.attr("qosDone", "1");
+			if (res.statusCode == 403) {
+				/*
+				 * Remove the target and associated template as user has no
+				 * access to this
+				 */
+				console.log("Access Denied returned from backend.");
+				$("#" + $target.attr("template")).remove();
+				$target.remove();
+			} else {
+				/* Process template with the returned model */
+				console.log("Read from server: " + data);
+				var source = $("#" + $target.attr("template")).html();
+				console.log("Compiling template: " + source);
+				template = Handlebars.compile(source);
+				model = JSON.parse(data);
+				$target.html(template(model));
+				$target.attr("qosDone", "1");
+			};
 			callback();
 		});
 	});

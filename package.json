@@ -9,6 +9,7 @@
     "generic-session": "*",
     "handlebars": "*",
     "http": "*",
+    "manacle" : "*",
     "request": "*"
   },
   "devDependencies": {},
