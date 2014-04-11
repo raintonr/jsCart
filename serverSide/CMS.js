@@ -3,21 +3,21 @@ var path = require("path");
 var fs = require("fs");
 
 module.exports = {
-	createServer : function(port) {
-		console.log("Starting CMS on %d...", port);
+	createServer : function(opts) {
+		console.log("Starting CMS on %d...", opts.cmsPort);
 
 		http.createServer(function(req, res) {
 			if (req.method == "GET") {
 				handle_get(req, res);
 			}
-		}).listen(port);
+		}).listen(opts.cmsPort);
 
 	}
 };
 
 function handle_get(req, res) {
 	console.log("CMS serving up: ", req.url);
-	var filePath = path.join(__dirname, req.url);
+	var filePath = path.join(__dirname + "/../clientSide", req.url);
 	console.log("File: %s", filePath);
 
 	fs.exists(filePath, function(exists) {
