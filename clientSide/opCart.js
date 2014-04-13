@@ -14,9 +14,17 @@ $(function() {
 	var source = $("#cart-template").html();
 	template = Handlebars.compile(source);
 
+	/*
+	 * TODO: fix this so the model doesn't have to be read twice.
+	 */
 	$.get("/models/cart", function(data, textStatus, jqXHR) {
 		console.log("Read from server: " + data);
-		cart = jQuery.parseJSON(data).items;
+		cart = jQuery.parseJSON(data);
+		if (cart.items) {
+			cart = cart.items;
+		} else {
+			cart = [];
+		}
 		console.log(cart);
 		renderCart();
 	});
