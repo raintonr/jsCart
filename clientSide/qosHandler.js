@@ -3,7 +3,7 @@ $(function() {
 		function() {
 			var $target = $(this);
 			if (!$target.attr("qosDone")) {
-				$.get("http://localhost:3031" + $target.attr("model"),
+				$.get($target.attr("model"),
 				function(data, textStatus, jqXHR) {
 					console.log("Read from server: " + data);
 	

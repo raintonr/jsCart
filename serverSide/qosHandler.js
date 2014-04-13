@@ -30,7 +30,11 @@ module.exports = {
 			replaceQos(reqOptions, $item, $, callback);
 		}, function() {
 			body = $.html();
-			finishReq(res, body);
+			res.writeHead(200, {
+				"Content-Length" : body.length
+			});
+			res.write(body);
+			res.end();
 		});
 	}
 };
@@ -87,12 +91,4 @@ function replaceQos(options, $target, $, callback) {
 		console.log("Timeout!");
 		req.abort();
 	});
-}
-
-function finishReq(res, body) {
-	res.writeHead(200, {
-		"Content-Length" : body.length
-	});
-	res.write(body);
-	res.end();
 }

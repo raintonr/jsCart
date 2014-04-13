@@ -7,18 +7,16 @@ function renderCart() {
 }
 function storeCart() {
 	$.post("/store", JSON.stringify({
-		"cart" : {
-			"items" : cart
-		}
+		"items" : cart
 	}), "json");
 }
 $(function() {
 	var source = $("#cart-template").html();
 	template = Handlebars.compile(source);
 
-	$.get("/get", function(data, textStatus, jqXHR) {
+	$.get("/models/cart", function(data, textStatus, jqXHR) {
 		console.log("Read from server: " + data);
-		cart = jQuery.parseJSON(data).cart.items;
+		cart = jQuery.parseJSON(data).items;
 		console.log(cart);
 		renderCart();
 	});

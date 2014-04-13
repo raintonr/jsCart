@@ -14,10 +14,11 @@ function User(req) {
 	 * If there were any complex operations going on here, we would stash the
 	 * results in the session.
 	 */
-	this.userAcl.allow("read", "/slow");
+	this.userAcl.allow("read", "/models/cart");
+	this.userAcl.allow("read", "/models/slow");
 
-	if (req.headers["cn"]) {
-		this.userAcl.allow("read", "/fast");
+	if (1 || req.headers["cn"]) {
+		this.userAcl.allow("read", "/models/fast");
 	}
 }
 

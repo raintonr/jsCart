@@ -14,12 +14,31 @@
   <p>Hi! I'm a slow item</p>
   <p>See... {{operation}}</p>
 </script>
+<script id="cart-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a shopping cart</p>
+  {{#each items}}
+    <div class="cart-item">{{@index}}: {{this}}</div>
+  {{/each}}
+</script>
 <link href="opCart.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 	<p>This is a test QOS page...</p>
-	<div class="qosTemplate" template="fast-template" model="/fast"></div>
-	<p>Some more static text... blah, blah...</p>
-	<div class="qosTemplate" template="slow-template" model="/slow"></div>
+	<div class="qosTemplate" template="fast-template" model="/models/fast"></div>
+	<p>Some more static text... blah, blah... Slow should appear below in <span id="countdown">5</span> seconds</p>
+	<div class="qosTemplate" template="slow-template" model="/models/slow"></div>
+	<p>The <a href="cart.html">cart</a> should be below here...</p>
+	<div class="qosTemplate" template="cart-template" model="/models/cart"></div>
+<script type="text/javascript">
+$(function(){
+	var sec = $('#countdown').html() - 1;
+	var timer = setInterval(function() { 
+	   $('#countdown').html(sec--);
+	   if (sec == -1) {
+	      clearInterval(timer);
+	   } 
+	}, 1000);
+});
+</script>
 </body>
 </html>
