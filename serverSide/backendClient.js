@@ -19,56 +19,45 @@ module.exports = {
 			req.write(chunk);
 	    });
 	    reqIn.on("end", function() {
-	    	req.end();
-			req.on('response', function(res) {
-				console.log('Response from Backend');
-				resIn.writeHead(res.statusCode, res.headers);
-				req.on('data', function(chunk) {
-					resIn.write(chunk);
-				});
-				res.on("end", function() {
-					resIn.end();
-				});
-			});
-			req.on('error', function(err) {
-				console.log('Error from backend post (backend): ' + err.message);
-				resIn.statusCode = 500;
-				resIn.end;
-			});
+			passThru(reqIn, resIn, req);
 	    });
 		reqIn.on('error', function(err) {
-			console.log('Error from backend post request (in): ' + err.message);
+			console.log('Error from backend POST request (in): ' + err.message);
 			resIn.statusCode = 500;
 			resIn.end;
 		});
 	},
 	get : function(reqIn, resIn, path) {
-		/*
-		 * Copy original request ID headers so user auth works.
-		 */
 		var req = http.request(getReqOpts(reqIn, path));
-		req.end();
-		req.on('error', function(err) {
-			console.log('Error from backend: ' + err.message);
-			resIn.statusCode = 500;
-			resIn.end;
-		});
-		req.on('response', function(res) {
-			console.log('Response from Backend');
-			var data = "";
-			res.on('data', function(chunk) {
-				data += chunk;
-			});
-			res.on("end", function() {
-				resIn.writeHead(200, {
-					"Content-Length" : data.length
-				});
-				resIn.write(data);
-				resIn.end();
-			});
-		});
+		passThru(reqIn, resIn, req);
 	}
 };
+
+function passThru(reqIn, resIn, req) {
+	req.end();
+	req.on('response', function(res) {
+		console.log('Response from backend for: ', reqIn.url, res.headers);
+		/*
+		 * Remove cookies from backend.
+		 * TODO: find a better way to do this. Probably won't be needed when
+		 * we are using memcache, etc. for sessions.
+		 */
+		delete res.headers["set-cookie"];
+
+		resIn.writeHead(res.statusCode, res.headers);
+		res.on('data', function(chunk) {
+			resIn.write(chunk);
+		});
+		res.on("end", function() {
+			resIn.end();
+		});
+	});
+	req.on('error', function(err) {
+		console.log('Error from backend POST (backend): ' + err.message);
+		resIn.statusCode = 500;
+		resIn.end;
+	});
+}
 
 function getReqOpts(req, path) {
 	return {
