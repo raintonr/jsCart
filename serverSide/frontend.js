@@ -16,7 +16,7 @@ module.exports = {
 				var session = genericSession(req, res, opts.sessionStore);
 				req.headers._sessionid = session.id;
 				if (req.method == "POST") {
-					handle_post(req, res, session);
+					backendClient.post(req, res);
 				} else {
 					handle_get(req, res);
 				}
@@ -24,28 +24,10 @@ module.exports = {
 		}
 };
 
-function handle_post(req, res, session) {
-	/*
-	 * TODO: pass this to the backend.
-	 */
-	var data = "";
-	req.on("data", function(chunk) {
-        data += chunk;
-    });
-    req.on("end", function() {
-        console.log("raw: " + data);
-        session.set("cart", data, function(){
-        	res.end();
-        });
-    });
-}
-
-function handle_get(req, res, session) {
-	/*
-	 * See if we should be pulling something from store
-	 */
+function handle_get(req, res) {
 	if (req.url.indexOf("/models/") == 0) {
-		console.log("Passing model request downstream");
+		/* Pull models from backend */
+		console.log("Passing model request to backend");
 		backendClient.get(req, res, req.url);
 	} else {
 		/* Nope - just serve up some files from the CMS */
@@ -62,6 +44,9 @@ function serveFromCms(reqIn, resIn) {
 	});
 	req.on('response', function(res) {
 		console.log('Response from CMS');
+		/*
+		 * We have to assemble the whole body first in order to parse the HTML in QOS handler.
+		 */
 		var body = "";
 		res.on('data', function(chunk){
 			body += chunk;

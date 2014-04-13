@@ -1,9 +1,4 @@
-var qos = 100;
 var http = require("http");
-var cheerio = require("cheerio");
-var Handlebars = require("handlebars");
-var request = require("request");
-var async = require("async");
 var opts = {};
 
 module.exports = {
@@ -12,6 +7,40 @@ module.exports = {
 	},
 	getReqOpts : function(reqIn, path) {
 		return getReqOpts(reqIn, path);
+	},
+	post : function(reqIn, resIn) {
+		/*
+		 * Basically, proxy this through to the backend after injecting headers.
+		 * TODO: handle Websockets, with fallback to this.
+		 * TODO: Maybe there is a better way than this?
+		 */
+		var req = http.request(getReqOpts(reqIn, reqIn.url));
+		reqIn.on("data", function(chunk) {
+			req.write(chunk);
+	    });
+	    reqIn.on("end", function() {
+	    	req.end();
+			req.on('response', function(res) {
+				console.log('Response from Backend');
+				resIn.writeHead(res.statusCode, res.headers);
+				req.on('data', function(chunk) {
+					resIn.write(chunk);
+				});
+				res.on("end", function() {
+					resIn.end();
+				});
+			});
+			req.on('error', function(err) {
+				console.log('Error from backend post (backend): ' + err.message);
+				resIn.statusCode = 500;
+				resIn.end;
+			});
+	    });
+		reqIn.on('error', function(err) {
+			console.log('Error from backend post request (in): ' + err.message);
+			resIn.statusCode = 500;
+			resIn.end;
+		});
 	},
 	get : function(reqIn, resIn, path) {
 		/*
@@ -46,7 +75,7 @@ function getReqOpts(req, path) {
 			host: "localhost",
 			port: opts.backendPort,
 			path: path,
-			method: "GET",
+			method: req.method,
 			headers: extractUserHeaders(req)
 	};
 }

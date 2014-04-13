@@ -9,22 +9,42 @@ module.exports = {
 		console.log("Starting Backend on %d...", opts.backendPort);
 
 		http.createServer(function(req, res) {
+			/*
+			 * Create a new session then overwrite it's ID from that in the header. 
+			 */
+			var session = genericSession(req, res, opts.sessionStore);
+			session.id = req.headers._sessionid;
+			console.log("sessionId: ", session.id);
+
+			if (req.method == "POST") {
+				handle_post(req, res, session);
+			}
 			if (req.method == "GET") {
-				handle_get(req, res);
+				handle_get(req, res, session);
 			}
 		}).listen(opts.backendPort);
 
 	}
 };
 
-function handle_get(req, res) {
+function handle_post(req, res, session) {
 	/*
-	 * Create a new session then overwrite it's ID from that in the header. 
+	 * TODO: this would switch, etc.
+	 * For now just stash away the cart in the session.
 	 */
-	var session = genericSession(req, res, opts.sessionStore);
-	session.id = req.headers._sessionid;
-	console.log("sessionId: ", session.id);
-	
+	var data = "";
+	req.on("data", function(chunk) {
+        data += chunk;
+    });
+    req.on("end", function() {
+        console.log("raw: " + data);
+        session.set("cart", data, function(){
+        	res.end();
+        });
+    });
+}
+
+function handle_get(req, res, session) {
 	var user = new User(req);
 	if (!user.allowed(req.url)) {
 		console.log("Access Denied: ", req.url);
