@@ -22,7 +22,7 @@ module.exports = {
 			passThru(reqIn, resIn, req);
 	    });
 		reqIn.on('error', function(err) {
-			console.log('Error from backend POST request (in): ' + err.message);
+			console.log('Error from backend POST request (in): ', err.message);
 			resIn.statusCode = 500;
 			resIn.end;
 		});
@@ -53,7 +53,7 @@ function passThru(reqIn, resIn, req) {
 		});
 	});
 	req.on('error', function(err) {
-		console.log('Error from backend POST (backend): ' + err.message);
+		console.log('Error from backend: ', err.message);
 		resIn.statusCode = 500;
 		resIn.end;
 	});
