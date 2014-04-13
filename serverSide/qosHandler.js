@@ -1,25 +1,17 @@
-var qos = 100;
 var http = require("http");
 var cheerio = require("cheerio");
 var Handlebars = require("handlebars");
 var request = require("request");
 var async = require("async");
+var backendClient = require("./backendClient");
+var opts;
 
 module.exports = {
-	init : function(opts) {
-		this.opts = opts;
+	init : function(optsIn) {
+		opts = optsIn;
+		backendClient.init(opts);
 	},
 	handleQos : function(req, res, body) {
-		/*
-		 * Copy original request ID headers so user auth works.
-		 */
-		var reqOptions = {
-				host: "localhost",
-				port: this.opts.backendPort,
-				method: "GET",
-				headers: extractUserHeaders(this.opts.userHeaders, req)
-		};
-
 		var funcs = [];
 		$ = cheerio.load(body);
 		$(".qosTemplate").each(function() {
@@ -27,7 +19,7 @@ module.exports = {
 		});
 		
 		async.each(funcs, function($item, callback) {
-			replaceQos(reqOptions, $item, $, callback);
+			replaceQos(req, $item, $, callback);
 		}, function() {
 			body = $.html();
 			res.writeHead(200, {
@@ -39,21 +31,9 @@ module.exports = {
 	}
 };
 
-function extractUserHeaders(userHeaders, req) {
-	var headers = {};
-	for (var lp in userHeaders) {
-		var header = userHeaders[lp];
-		if (req.headers[header]) {
-			headers[header] = req.headers[header]; 
-		}
-	}
-	return headers;
-}
-
-function replaceQos(options, $target, $, callback) {
-	options.path = $target.attr("model");
-	
-	var req = http.request(options);
+function replaceQos(reqIn, $target, $, callback) {
+	var path = $target.attr("model");
+	var req = http.request(backendClient.getReqOpts(reqIn, path));
 	req.end();
 	req.on('error', function(err) {
 		console.log('Error: ' + err.message);
@@ -87,7 +67,7 @@ function replaceQos(options, $target, $, callback) {
 			callback();
 		});
 	});
-	req.setTimeout(qos, function() {
+	req.setTimeout(opts.qos, function() {
 		console.log("Timeout!");
 		req.abort();
 	});
