@@ -36,7 +36,7 @@ module.exports = {
 function passThru(reqIn, resIn, req) {
 	req.end();
 	req.on('response', function(res) {
-		console.log('Response from backend for: ', reqIn.url, res.headers);
+		console.log('Response from backend for: ', reqIn.url);
 		/*
 		 * Remove cookies from backend.
 		 * TODO: find a better way to do this. Probably won't be needed when
