@@ -14,16 +14,17 @@ function User(req) {
 	 * If there were any complex operations going on here, we would stash the
 	 * results in the session.
 	 */
-	this.userAcl.allow("read", "/models/cart");
-	this.userAcl.allow("read", "/models/slow");
+	this.userAcl.allow("GET", "/models/cart");
+	this.userAcl.allow("POST", "/models/cart");
+	this.userAcl.allow("GET", "/models/slow");
 
-	if (1 || req.headers["cn"]) {
-		this.userAcl.allow("read", "/models/fast");
+	if (req.headers["cn"]) {
+		this.userAcl.allow("GET", "/models/fast");
 	}
 }
 
-User.prototype.allowed = function(path) {
-	return this.userAcl.allowed("read", path);
+User.prototype.allowed = function(req) {
+	return this.userAcl.allowed(req.method, req.url);
 };
 
 module.exports = User;

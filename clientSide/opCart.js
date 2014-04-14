@@ -6,7 +6,7 @@ function renderCart() {
 	}));
 }
 function storeCart() {
-	$.post("/store", JSON.stringify({
+	$.post("/models/cart", JSON.stringify({
 		"items" : cart
 	}), "json");
 }
