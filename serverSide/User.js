@@ -20,7 +20,7 @@ function User(req) {
 
 	this.userAcl.allow("GET", "/models/content/a-b");
 
-	if (1 || req.headers["cn"]) {
+	if (req.headers["cn"]) {
 		this.userAcl.allow("GET", "/models/fast");
 	}
 }
