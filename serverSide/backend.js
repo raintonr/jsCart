@@ -82,12 +82,14 @@ function handle_get(req, res, session) {
 		 * This is just a dummy operation so we will return an image for SGS5 or
 		 * iPhone5.
 		 */
-		var handset = "http://smb.optus.com.au/opfiles/Shop/Consumer/Mobile/Media/Images/Handsets/Samsung/LGE_SamsungGs5_white.png"; 
+		var handset = "http://smb.optus.com.au/opfiles/Shop/Consumer/Mobile/Media/Images/Handsets/Samsung/LGE_SamsungGs5_white.png";
+		var footer = "";
 		if (req.headers['ab'] == 'apple') {
-			handset = "http://smb.optus.com.au/opfiles/Shop/Consumer/Mobile/Media/Images/Handsets/iPhone/iPhone%205s/iPhone-5s-Space-Gray-LGE.png"; 
+			handset = "http://smb.optus.com.au/opfiles/Shop/Consumer/Mobile/Media/Images/Handsets/iPhone/iPhone%205s/iPhone-5s-Space-Gray-LGE.png";
+			footer = '<div class="qosTemplate" template="slow-template" model="/models/slow"></div>';
 		}
 		finishRes(res, 200, JSON.stringify({
-			"contentHtml" : '<p>We think you will like...</p><img src="' + handset + '"/>'
+			"contentHtml" : '<p>We think you will like...</p><img src="' + handset + '"/>' + footer
 		}));
 		break;
 
