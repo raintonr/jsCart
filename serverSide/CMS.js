@@ -17,7 +17,7 @@ module.exports = {
 
 function handle_get(req, res) {
 	console.log("CMS serving up: ", req.url);
-	var filePath = path.join(__dirname + "/../clientSide", req.url);
+	var filePath = path.join(__dirname, "/../clientSide", req.url);
 	console.log("File: %s", filePath);
 
 	fs.exists(filePath, function(exists) {

@@ -1,3 +1,5 @@
+var fs = require("fs");
+var path = require("path");
 var http = require("http");
 var cheerio = require("cheerio");
 var Handlebars = require("handlebars");
@@ -12,15 +14,8 @@ module.exports = {
 		backendClient.init(opts);
 	},
 	handleQos : function(req, res, body) {
-		var funcs = [];
 		$ = cheerio.load(body);
-		$(".qosTemplate").each(function() {
-			funcs.push($(this));
-		});
-		
-		async.each(funcs, function($item, callback) {
-			replaceQos(req, $item, $, callback);
-		}, function() {
+		handleQos(req, $, $, function(){
 			body = $.html();
 			res.writeHead(200, {
 				"Content-Length" : body.length
@@ -31,44 +26,87 @@ module.exports = {
 	}
 };
 
-function replaceQos(reqIn, $target, $, callback) {
-	var path = $target.attr("model");
-	var req = http.request(backendClient.getReqOpts(reqIn, path));
-	req.end();
-	req.on('error', function(err) {
-		console.log('Error: ' + err.message);
-		callback();
+function handleQos(req, $root, $, callbackOut) {
+	var funcs = [];
+	$(".qosTemplate").each(function() {
+		funcs.push($(this));
 	});
-	req.on('response', function(res) {
-		console.log('Response from Backend');
-		var data = "";
-		res.on('data', function(chunk) {
-			data += chunk;
-		});
-		res.on("end", function() {
-			if (res.statusCode == 403) {
-				/*
-				 * Remove the target and associated template as user has no
-				 * access to this
-				 */
-				console.log("Access Denied returned from backend.");
-				$("#" + $target.attr("template")).remove();
-				$target.remove();
-			} else {
-				/* Process template with the returned model */
-				console.log("Read from server: " + data);
-				var source = $("#" + $target.attr("template")).html();
-				console.log("Compiling template: " + source);
-				template = Handlebars.compile(source);
-				model = JSON.parse(data);
-				$target.html(template(model));
-				$target.attr("qosDone", "1");
-			};
+	
+	async.each(funcs, function($item, callback) {
+		replaceQos(req, $item, $root, $, callback);
+	}, callbackOut);
+}
+
+function replaceQos(reqIn, $target, $root, $, callback) {
+	var modelPath = $target.attr("model");
+	var templateName = $target.attr("template");
+	
+	/*
+	 * TODO: cache template loads.
+	 */
+	var filePath = path.join(__dirname, "/templates/") + templateName + ".html";
+	console.log("Loading template: %s", filePath);
+	fs.readFile(filePath, function(err, data) {
+		if (err) {
+			/* Fail gracefully */
+			console.log(err);
 			callback();
-		});
-	});
-	req.setTimeout(opts.qos, function() {
-		console.log("Timeout!");
-		req.abort();
+		} else {
+			var templateSource = data.toString();
+			var req = http.request(backendClient.getReqOpts(reqIn, modelPath));
+			req.end();
+			req.on('error', function(err) {
+				console.log('Error: ' + err.message);
+				callback();
+			});
+			req.on('response', function(res) {
+				console.log('Response from Backend');
+				var data = "";
+				res.on('data', function(chunk) {
+					data += chunk;
+				});
+				res.on("end", function() {
+					if (res.statusCode == 403) {
+						/*
+						 * Remove the target and associated template as user has no
+						 * access to this
+						 */
+						console.log("Access Denied returned from backend.");
+						$("#" + $target.attr("template")).remove();
+						$target.remove();
+						callback();
+					} else {
+						/* Process template with the returned model */
+						model = JSON.parse(data);
+						console.log("Read from server: " + data);
+						console.log("Compiling template: " +  templateSource);
+						template = Handlebars.compile(templateSource);
+						
+						body = template(model);
+						$ = cheerio.load(body);
+						handleQos(reqIn, $root, $, function(){
+							$target.attr("qosDone", "1");
+							$target.html($.html());
+							callback();
+						});
+					};
+				});
+			});
+			req.setTimeout(opts.qos, function() {
+				req.abort();
+				console.log("Timeout!");
+				/* 
+				 * We need to add the template in here for the front end.
+				 * Only if it isn't there already of course.
+				 */
+				if (!$root("#" + templateName).length) {
+					var templateCode =
+						'<script id="' + templateName + '" type="text/x-handlebars-template">' +
+						templateSource +
+						'</script>';
+					$root("body").append(templateCode);
+				}
+			});
+		}
 	});
 }
