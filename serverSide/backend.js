@@ -71,7 +71,26 @@ function handle_get(req, res, session) {
 			"operation" : "fast"
 		}));
 		break;
-		
+
+	case "/models/content/a-b":
+		/*
+		 * This one is for A-B testing. We will return a 'content item'
+		 * depending on the header injected.
+		 * 
+		 * Typically this would be fetching a rendered item from the CMS.
+		 * 
+		 * This is just a dummy operation so we will return an image for SGS5 or
+		 * iPhone5.
+		 */
+		var handset = "http://smb.optus.com.au/opfiles/Shop/Consumer/Mobile/Media/Images/Handsets/Samsung/LGE_SamsungGs5_white.png"; 
+		if (req.headers['ab'] == 'apple') {
+			handset = "http://smb.optus.com.au/opfiles/Shop/Consumer/Mobile/Media/Images/Handsets/iPhone/iPhone%205s/iPhone-5s-Space-Gray-LGE.png"; 
+		}
+		finishRes(res, 200, JSON.stringify({
+			"contentHtml" : '<p>We think you will like...</p><img src="' + handset + '"/>'
+		}));
+		break;
+
 	case "/models/cart":
 		session.get("cart", function(err, data){
 			finishRes(res, 200, data);

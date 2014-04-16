@@ -1,35 +1,23 @@
 <html>
 <head>
 <title>QOS template example</title>
-<script type="text/javascript"
-	src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v1.3.0.js"></script>
-<script type="text/javascript"
-	src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-<script type="text/javascript" src="qosHandler.js"></script>
-<script id="fast-template" type="text/x-handlebars-template">
-  <p>Hi! I'm a fast item</p>
-  <p>See... {{operation}}</p>
-</script>
-<script id="slow-template" type="text/x-handlebars-template">
-  <p>Hi! I'm a slow item</p>
-  <p>See... {{operation}}</p>
-</script>
-<script id="cart-template" type="text/x-handlebars-template">
-  <p>Hi! I'm a shopping cart</p>
-  {{#each items}}
-    <div class="cart-item">{{@index}}: {{this}}</div>
-  {{/each}}
-</script>
 <link href="opCart.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 	<p>This is a test QOS page...</p>
+	<p>Below is an a-b test. You should see a Samsung phone, or Apple if 'ab' header has value of 'apple'.</p>
+	<div class="qosTemplate" template="a-b-template" model="/models/content/a-b"></div>
 	<p>The 'fast' model will only appear below if 'cn' header has a value.</p>
 	<div class="qosTemplate" template="fast-template" model="/models/fast"></div>
 	<p>Some more static text... blah, blah... Slow should appear below in <span id="countdown">5</span> seconds</p>
 	<div class="qosTemplate" template="slow-template" model="/models/slow"></div>
 	<p>The <a href="cart.html">cart</a> should be below here...</p>
 	<div class="qosTemplate" template="cart-template" model="/models/cart"></div>
+
+<script type="text/javascript"
+	src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v1.3.0.js"></script>
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 <script type="text/javascript">
 $(function(){
 	var sec = $('#countdown').html() - 1;
@@ -40,6 +28,24 @@ $(function(){
 	   } 
 	}, 1000);
 });
+</script>
+<script type="text/javascript" src="qosHandler.js"></script>
+<script id="fast-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a fast item</p>
+  <p>See... {{operation}}</p>
+</script>
+<script id="slow-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a slow item</p>
+  <p>See... {{operation}}</p>
+</script>
+<script id="a-b-template" type="text/x-handlebars-template">
+{{{contentHtml}}}
+</script>
+<script id="cart-template" type="text/x-handlebars-template">
+  <p>Hi! I'm a shopping cart</p>
+  {{#each items}}
+    <div class="cart-item">{{@index}}: {{this}}</div>
+  {{/each}}
 </script>
 </body>
 </html>

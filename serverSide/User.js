@@ -18,6 +18,8 @@ function User(req) {
 	this.userAcl.allow("POST", "/models/cart");
 	this.userAcl.allow("GET", "/models/slow");
 
+	this.userAcl.allow("GET", "/models/content/a-b");
+
 	if (req.headers["cn"]) {
 		this.userAcl.allow("GET", "/models/fast");
 	}

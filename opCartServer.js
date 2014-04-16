@@ -12,7 +12,7 @@ var opts = {
 	backendPort : 3031,
 	frontendPort : 3030,
 	cmsPort : 3032,
-	userHeaders : [ "cn", "status", "_sessionid" ],
+	userHeaders : [ "ab", "cn", "status", "_sessionid" ],
 	qos : 100,
 	sessionStore : sessionStore
 };
