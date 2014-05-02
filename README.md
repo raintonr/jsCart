@@ -19,6 +19,11 @@ In practice this is intended to run behind a user identification layer that woul
 A 'logged in user' can see the 'fast' application. Without the header, this will not be shown.
 
 
+A-B Testing
+===========
+
+A simple example of A-B Testing is included. Set the header 'ab' to 'apple' to show the user Apple products (imagine they have been identified as particularly interested in these). As with user identification, in the real world this header would be set above this application where possible.
+
 How to run it
 =============
 
