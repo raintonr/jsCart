@@ -14,7 +14,7 @@ User Access
 
 There are primitive user access controls built in using the manacle module.
 
-In practice this is intended to run behind a user identification layer that would inject a header with user ID. For the sake of this example, add a 'cn' header to emulate a 'logged in user'. For this example, the actual valur of the header is not relevant.
+In practice this is intended to run behind a user identification layer that would inject a header with user ID. For the sake of this example, add a 'cn' header to emulate a 'logged in user'. For this example, the actual value of the header is not relevant.
 
 A 'logged in user' can see the 'fast' application. Without the header, this will not be shown.
 
